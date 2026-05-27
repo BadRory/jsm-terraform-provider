@@ -5,14 +5,15 @@ import (
 	"context"
 	"os"
 
-	"github.com/badrory/jsm-terraform-provider/internal/client"
-	"github.com/badrory/jsm-terraform-provider/internal/datasources"
-	"github.com/badrory/jsm-terraform-provider/internal/resources"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/provider"
 	"github.com/hashicorp/terraform-plugin-framework/provider/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+
+	"github.com/badrory/jsm-terraform-provider/internal/client"
+	"github.com/badrory/jsm-terraform-provider/internal/datasources"
+	"github.com/badrory/jsm-terraform-provider/internal/resources"
 )
 
 // Ensure the provider satisfies the framework interface.

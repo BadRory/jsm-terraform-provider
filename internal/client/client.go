@@ -125,7 +125,7 @@ func (c *Client) doJSON(ctx context.Context, method, url string, body interface{
 	if err != nil {
 		return err
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	respBytes, err := io.ReadAll(resp.Body)
 	if err != nil {

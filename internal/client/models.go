@@ -105,17 +105,18 @@ type UpdateObjectTypeRequest struct {
 type AttributeType int
 
 const (
-	AttributeTypeDefault   AttributeType = 0
-	AttributeTypeObject    AttributeType = 1
-	AttributeTypeUser      AttributeType = 2
-	AttributeTypeStatus    AttributeType = 6
+	AttributeTypeDefault AttributeType = 0
+	AttributeTypeObject  AttributeType = 1
+	AttributeTypeUser    AttributeType = 2
+	AttributeTypeStatus  AttributeType = 6
 )
 
 // DefaultType maps the integer ID to a human-readable data type for
 // AttributeType=0 (Default) attributes.
-//  0 = Text, 1 = Integer, 2 = Boolean, 3 = Double, 4 = Date,
-//  5 = Time, 6 = DateTime, 7 = URL, 8 = Email, 9 = Textarea,
-//  10 = Select, 11 = IP Address
+//
+//	0 = Text, 1 = Integer, 2 = Boolean, 3 = Double, 4 = Date,
+//	5 = Time, 6 = DateTime, 7 = URL, 8 = Email, 9 = Textarea,
+//	10 = Select, 11 = IP Address
 type DefaultType struct {
 	ID   int    `json:"id"`
 	Name string `json:"name"`
@@ -177,9 +178,9 @@ type Object struct {
 
 // ObjectAttribute is the value of a single attribute on an object instance.
 type ObjectAttribute struct {
-	ID                    string                `json:"id"`
-	ObjectTypeAttribute   ObjectTypeAttribute   `json:"objectTypeAttribute"`
-	ObjectTypeAttributeID string                `json:"objectTypeAttributeId,omitempty"`
+	ID                    string                 `json:"id"`
+	ObjectTypeAttribute   ObjectTypeAttribute    `json:"objectTypeAttribute"`
+	ObjectTypeAttributeID string                 `json:"objectTypeAttributeId,omitempty"`
 	ObjectAttributeValues []ObjectAttributeValue `json:"objectAttributeValues"`
 }
 
@@ -223,9 +224,9 @@ type AQLRequest struct {
 
 // AQLResponse is the paginated response from POST /object/aql.
 type AQLResponse struct {
-	Values         []Object `json:"values"`
-	StartAt        int      `json:"startAt"`
-	MaxResults     int      `json:"maxResults"`
-	TotalCount     int      `json:"totalCount"`
-	IsLast         bool     `json:"isLast"`
+	Values     []Object `json:"values"`
+	StartAt    int      `json:"startAt"`
+	MaxResults int      `json:"maxResults"`
+	TotalCount int      `json:"totalCount"`
+	IsLast     bool     `json:"isLast"`
 }
