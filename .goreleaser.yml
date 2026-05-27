@@ -1,0 +1,105 @@
+version: 2
+
+# ── Pre-flight ────────────────────────────────────────────────────────────────
+before:
+  hooks:
+    - go mod tidy
+
+# ── Build targets ─────────────────────────────────────────────────────────────
+builds:
+  - env:
+      - CGO_ENABLED=0
+    mod_timestamp: "{{ .CommitTimestamp }}"
+    flags:
+      - -trimpath
+    ldflags:
+      # Inject the version string set in main.go
+      - "-s -w -X main.version={{ .Version }}"
+    goos:
+      - linux
+      - darwin
+      - windows
+      - freebsd
+    goarch:
+      - amd64
+      - arm64
+      - "386"
+      - arm
+    goarm:
+      - "7"
+    ignore:
+      # Darwin arm (M-series) and amd64 only; no 32-bit macOS
+      - goos: darwin
+        goarch: "386"
+      - goos: darwin
+        goarch: arm
+      # Windows arm is rarely needed for Terraform providers
+      - goos: windows
+        goarch: arm
+      - goos: windows
+        goarch: arm64
+
+# ── Archives ──────────────────────────────────────────────────────────────────
+# Terraform CLI expects zip archives named:
+#   <name>_<version>_<os>_<arch>.zip
+archives:
+  - format: zip
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+
+# ── Checksums ─────────────────────────────────────────────────────────────────
+checksum:
+  name_template: "{{ .ProjectName }}_{{ .Version }}_SHA256SUMS"
+  algorithm: sha256
+
+# ── Signing (optional — required for Terraform Registry) ─────────────────────
+# Set GPG_FINGERPRINT in CI (via the GPG import step in release.yml) to enable.
+signs:
+  - artifacts: checksum
+    cmd: gpg
+    args:
+      - "--batch"
+      - "--local-user"
+      - "{{ .Env.GPG_FINGERPRINT }}"
+      - "--output"
+      - "${signature}"
+      - "--detach-sign"
+      - "${artifact}"
+    signature: "${artifact}.sig"
+    # Skip signing if no fingerprint is available
+    if: '{{ ne .Env.GPG_FINGERPRINT "" }}'
+
+# ── GitHub Release ────────────────────────────────────────────────────────────
+release:
+  # Change to false once you are ready to publish final releases immediately
+  draft: false
+  # Auto-generate release notes from merged PR titles
+  auto_notes: true
+  header: |
+    ## JSM Terraform Provider {{ .Tag }}
+
+    See the [documentation](https://github.com/badrory/jsm-terraform-provider/blob/main/docs/index.md)
+    for installation and usage instructions.
+
+# ── Changelog ────────────────────────────────────────────────────────────────
+changelog:
+  sort: asc
+  use: github
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^chore:"
+      - "Merge pull request"
+      - "Merge branch"
+  groups:
+    - title: "New Features"
+      regexp: "^feat"
+      order: 0
+    - title: "Bug Fixes"
+      regexp: "^fix"
+      order: 1
+    - title: "Dependency Updates"
+      regexp: "^(build\\(deps\\)|deps)"
+      order: 2
+    - title: "Other"
+      order: 999

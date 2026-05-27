@@ -5,8 +5,9 @@ import (
 	"flag"
 	"log"
 
-	"github.com/badrory/jsm-terraform-provider/internal/provider"
 	"github.com/hashicorp/terraform-plugin-framework/providerserver"
+
+	"github.com/badrory/jsm-terraform-provider/internal/provider"
 )
 
 // version is set by goreleaser at build time.

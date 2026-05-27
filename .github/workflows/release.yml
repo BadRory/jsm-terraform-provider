@@ -1,0 +1,56 @@
+name: Release
+
+# Triggered by a pushed version tag, e.g. v0.1.0
+on:
+  push:
+    tags:
+      - 'v*'
+
+# Prevent two release jobs for the same tag from racing.
+# cancel-in-progress: false so a release already uploading assets isn't aborted.
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write  # create GitHub Release and upload binary assets
+
+jobs:
+  goreleaser:
+    name: GoReleaser
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          # Full history is required for GoReleaser's changelog generation.
+          fetch-depth: 0
+
+      - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c # v6.4.0
+        with:
+          go-version-file: go.mod
+
+      # Import GPG key for signing release checksums.
+      # Add GPG_PRIVATE_KEY and PASSPHRASE repository secrets to enable.
+      # Signing is required to publish to the Terraform Registry.
+      - name: Import GPG key
+        # secrets.X != '' is the correct way to gate on a secret being present;
+        # step-level env: is not in scope when the if: expression is evaluated.
+        if: ${{ secrets.GPG_PRIVATE_KEY != '' }}
+        id: import_gpg
+        uses: crazy-max/ghaction-import-gpg@2dc316deee8e90f13e1a351ab510b4d5bc0c82cd # v7.0.0
+        with:
+          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.PASSPHRASE }}
+
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@5daf1e915a5f0af01ddbcd89a43b8061ff4f1a89 # v7.2.2
+        with:
+          distribution: goreleaser
+          version: '~> v2'
+          args: release --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Empty string when the import step was skipped; goreleaser's config
+          # skips the sign block when GPG_FINGERPRINT is empty.
+          GPG_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}

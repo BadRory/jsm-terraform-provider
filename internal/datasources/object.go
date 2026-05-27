@@ -4,11 +4,12 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/badrory/jsm-terraform-provider/internal/client"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+
+	"github.com/badrory/jsm-terraform-provider/internal/client"
 )
 
 var _ datasource.DataSource = &ObjectDataSource{}

@@ -1,0 +1,61 @@
+version: "2"
+
+linters:
+  default: none
+  enable:
+    # Correctness
+    - errcheck        # unchecked errors
+    - govet           # go vet
+    - ineffassign     # ineffectual assignments
+    - staticcheck     # static analysis (includes gosimple, merged in v2)
+    - unused          # unused code
+    # Style / quality
+    - misspell        # spelling in comments/strings
+    - godot           # comment punctuation
+    - noctx           # HTTP requests without context
+    - bodyclose       # HTTP response body not closed
+    # Security
+    - gosec           # security checks
+    # Terraform-provider specific
+    - nilerr          # returning nil instead of error
+
+  settings:
+    gosec:
+      excludes:
+        # G107: URL from variable — common in API clients that build URLs dynamically
+        - G107
+    misspell:
+      locale: US
+    godot:
+      scope: declarations
+      capital: false
+
+  exclusions:
+    rules:
+      # Test files: relax security and error-check rules
+      - path: "_test\\.go$"
+        linters:
+          - gosec
+          - errcheck
+      # Examples directory: allow less-strict code
+      - path: "^examples/"
+        linters:
+          - gosec
+          - errcheck
+
+# ── Formatters ────────────────────────────────────────────────────────────────
+# In golangci-lint v2, formatters (gofmt, goimports, …) are separate from linters.
+formatters:
+  enable:
+    - gofmt
+    - goimports
+  settings:
+    goimports:
+      local-prefixes:
+        - github.com/badrory/jsm-terraform-provider
+
+# ── Issue limits ──────────────────────────────────────────────────────────────
+issues:
+  # Show all issues from each linter, not just the first 3
+  max-issues-per-linter: 0
+  max-same-issues: 0

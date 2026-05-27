@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/badrory/jsm-terraform-provider/internal/client"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
@@ -13,6 +12,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+
+	"github.com/badrory/jsm-terraform-provider/internal/client"
 )
 
 var _ resource.Resource = &ObjectTypeAttributeResource{}
