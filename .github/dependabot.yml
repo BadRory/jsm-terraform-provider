@@ -9,7 +9,9 @@ updates:
     labels:
       - "dependencies"
       - "go"
-    # Group all non-major Go dep bumps into a single PR to reduce noise
+    # Cap PRs to avoid inbox flood; major bumps each get their own PR.
+    open-pull-requests-limit: 5
+    # Group all non-major Go dep bumps into a single PR to reduce noise.
     groups:
       go-dependencies:
         patterns:
@@ -27,6 +29,7 @@ updates:
     labels:
       - "dependencies"
       - "github-actions"
+    open-pull-requests-limit: 5
     groups:
       actions-dependencies:
         patterns:
