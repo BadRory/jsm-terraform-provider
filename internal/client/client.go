@@ -95,7 +95,7 @@ func (c *Client) request(ctx context.Context, method, url string, body interface
 	if body != nil {
 		data, err := json.Marshal(body)
 		if err != nil {
-			return nil, fmt.Errorf("marshalling request body: %w", err)
+			return nil, fmt.Errorf("marshaling request body: %w", err)
 		}
 		bodyReader = bytes.NewReader(data)
 	}

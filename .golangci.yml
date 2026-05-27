@@ -1,6 +1,5 @@
 version: "2"
 
-# ── Linters ───────────────────────────────────────────────────────────────────
 linters:
   default: none
   enable:
@@ -8,7 +7,7 @@ linters:
     - errcheck        # unchecked errors
     - govet           # go vet
     - ineffassign     # ineffectual assignments
-    - staticcheck     # static analysis (includes gosimple, which merged into staticcheck in v2)
+    - staticcheck     # static analysis (includes gosimple, merged in v2)
     - unused          # unused code
     # Style / quality
     - misspell        # spelling in comments/strings
@@ -20,9 +19,32 @@ linters:
     # Terraform-provider specific
     - nilerr          # returning nil instead of error
 
+  settings:
+    gosec:
+      excludes:
+        # G107: URL from variable — common in API clients that build URLs dynamically
+        - G107
+    misspell:
+      locale: US
+    godot:
+      scope: declarations
+      capital: false
+
+  exclusions:
+    rules:
+      # Test files: relax security and error-check rules
+      - path: "_test\\.go$"
+        linters:
+          - gosec
+          - errcheck
+      # Examples directory: allow less-strict code
+      - path: "^examples/"
+        linters:
+          - gosec
+          - errcheck
+
 # ── Formatters ────────────────────────────────────────────────────────────────
-# In golangci-lint v2, formatters (gofmt, goimports, …) are configured
-# separately from linters.
+# In golangci-lint v2, formatters (gofmt, goimports, …) are separate from linters.
 formatters:
   enable:
     - gofmt
@@ -32,31 +54,8 @@ formatters:
       local-prefixes:
         - github.com/badrory/jsm-terraform-provider
 
-# ── Linter settings ───────────────────────────────────────────────────────────
-linters-settings:
-  gosec:
-    excludes:
-      # G107: URL from variable — common in API clients that build URLs dynamically
-      - G107
-  misspell:
-    locale: US
-  godot:
-    scope: declarations
-    capital: false
-
-# ── Per-path overrides ────────────────────────────────────────────────────────
+# ── Issue limits ──────────────────────────────────────────────────────────────
 issues:
-  exclude-rules:
-    # Test files: relax security and error-check rules
-    - path: "_test\\.go$"
-      linters:
-        - gosec
-        - errcheck
-    # Examples directory: allow less-strict code
-    - path: "^examples/"
-      linters:
-        - gosec
-        - errcheck
   # Show all issues from each linter, not just the first 3
   max-issues-per-linter: 0
   max-same-issues: 0
