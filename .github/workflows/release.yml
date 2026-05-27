@@ -1,0 +1,50 @@
+name: Release
+
+# Triggered by a pushed version tag, e.g. v0.1.0
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write   # create GitHub Release + upload assets
+  packages: write   # push to GitHub Container Registry (ghcr.io) if needed
+
+jobs:
+  goreleaser:
+    name: GoReleaser
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Full history is required for GoReleaser's changelog generation
+          fetch-depth: 0
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      # Import GPG key for signing release checksums.
+      # Set the GPG_PRIVATE_KEY and PASSPHRASE repository secrets to enable.
+      # Required if you want to publish to the Terraform Registry.
+      - name: Import GPG key
+        if: ${{ env.GPG_PRIVATE_KEY != '' }}
+        id: import_gpg
+        uses: crazy-max/ghaction-import-gpg@v6
+        with:
+          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.PASSPHRASE }}
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v6
+        with:
+          distribution: goreleaser
+          version: '~> v2'
+          args: release --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Only passed to goreleaser when the secret is present
+          GPG_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}

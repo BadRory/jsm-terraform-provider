@@ -1,0 +1,55 @@
+version: "2"
+
+# ── Linters ───────────────────────────────────────────────────────────────────
+linters:
+  default: none
+  enable:
+    # Correctness
+    - errcheck        # unchecked errors
+    - gosimple        # simplification suggestions
+    - govet           # go vet
+    - ineffassign     # ineffectual assignments
+    - staticcheck     # static analysis (supersedes megacheck)
+    - unused          # unused code
+    # Style / quality
+    - gofmt           # formatting
+    - goimports       # import ordering
+    - misspell        # spelling in comments/strings
+    - godot           # comment punctuation
+    - noctx           # HTTP requests without context
+    - bodyclose       # HTTP response body not closed
+    - exportloopref   # loop variable capture (Go < 1.22)
+    # Security
+    - gosec           # security checks
+    # Terraform-provider specific
+    - nilerr          # returning nil instead of error
+
+linters-settings:
+  gosec:
+    excludes:
+      # G107: URL from variable — common in API clients
+      - G107
+  misspell:
+    locale: US
+  godot:
+    scope: declarations
+    capital: false
+  goimports:
+    local-prefixes: github.com/badrory/jsm-terraform-provider
+
+# ── Per-path overrides ────────────────────────────────────────────────────────
+issues:
+  exclude-rules:
+    # Test files: relax some rules
+    - path: "_test\\.go$"
+      linters:
+        - gosec
+        - errcheck
+    # Examples directory: allow less-strict code
+    - path: "^examples/"
+      linters:
+        - gosec
+        - errcheck
+  # Show all issues from a linter, not just the first 3
+  max-issues-per-linter: 0
+  max-same-issues: 0
